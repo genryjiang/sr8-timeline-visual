@@ -5,6 +5,7 @@ from io import StringIO
 import os
 from difflib import get_close_matches
 from IPython.display import display
+import time
 
 # python script to visualise sr8 timeline as a flow network
 # Written by: HENRY JIANG
@@ -49,7 +50,7 @@ possible_matches = [
 
 
 # Sanity check on dataframe imported correctly
-display(df)
+# display(df)
 # Export DataFrame to an HTML file
 df.to_html('output.html', index=False)
 print("DataFrame exported to output.html")
@@ -64,22 +65,19 @@ G.add_node('Source', label='Source')
 G.add_node('Sink', label='Sink')
 
 for _, row in df.iterrows():
-    print ("Starting Loop")
+ #   print ("Starting Loop")
     assembly = row["Assembly"].strip()
     # Create node
-    print("Looking at: " + assembly)
+    # print("Looking at: " + assembly)
     G.add_node(assembly, label=assembly)
 
     # Populate with partners first
-    for partners in str(row["Partners"]).strip().split(", "):
-        p = partners.strip()
-        # if P is N/A or NaN, ignore (these are not partner starting nodes)
-        if p.upper() == ("N/A", "NaN"):
-            # Add it to best guess partner match, once we confirm that we are a partner node
-            best_match = get_close_matches(p, possible_matches, n=1, cutoff=0.65)
-            G.add_edge(best_match, assembly, label=row["PartnerWeight"], weight=row["PartnerWeight"])
-            # Add to source
-            G.add_edge('Source', best_match)
+    if assembly in possible_matches:
+        G.add_edge('Source', assembly, label='INF')
+        if G.has_edge('Source', assembly):
+            print("================ Source --> PARTNER EDGE ADDED SUCCESSFULLY ===================")
+        else:
+            print("unable to find source to partner edge")
 
     # Populate internal links now
     # if NaN partners + preds, then we are a start of a branch
@@ -90,65 +88,36 @@ for _, row in df.iterrows():
         if (pd.isna(row["Successor"])):
             G.add_edge(assembly, "Sink")
         # Populate links (to Successors)
-        print("Total Successor list: " + str(row["Successor"]).strip())
+      #  print("Total Successor list: " + str(row["Successor"]).strip())
         for succ in str(row["Successor"]).strip().split(", "):
-            print("Successor value: " + succ)
-            if not (succ == 'NaN' or 'N/A'):
-                print('Adding Successor')
+           # print("Successor value: " + succ)
+            if succ not in ('N/A', 'nan'):
+              #  print('======== Adding Successor:' + succ)
                 G.add_edge(assembly, succ, label=row["EdgeWeight"], weight=row['EdgeWeight'])
-                print('Done adding Successor')
+               # print('Done adding Successor')
+
         # Populate Links (to partners)
         for part in str(row['Partners']).strip().split(', '):
-            print("Attemping to add partner: " + part)
-            G.add_edge(part, assembly, label=row["PartnerWeight"], weight=row['PartnerWeight'])
-            print("Done adding partner")
+          #  print("Attemping to add partner: " + part)
+            if part not in ('nan', 'N/A'):
+                partAdd = 'EXT - ' + part
+                G.add_edge(partAdd, assembly, label=row["PartnerWeight"], weight=row['PartnerWeight'])
+               # print("Done adding partner")
 
-# make it left→right, with more separation
-G.graph_attr.update({
-    "rankdir":   "LR",       # left-to-right instead of top-down
-    "nodesep":   "0.5",      # minimum space between nodes
-    "ranksep":   "0.75",     # minimum space between ranks (layers)
-    "splines":   "ortho",    # right-angle edges
-    "overlap":   "false",    # auto-resolve node overlaps
-    "fontsize":  "10"        # smaller default font
-})
-# optionally, force edge labels to sit in the middle
-G.edge_attr.update({
-    "labeldistance": "2.0",
-    "labelfontsize": "8"
-})
 
-G.layout(prog="dot")
-dot_source = G.string()
-# 4. Embed into an HTML template that pulls in Viz.js
-html = f"""<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<title>Interactive DAG</title>
-<!-- Viz.js bundle -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/viz.js/2.1.2/viz.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/viz.js/2.1.2/full.render.js"></script>
-<style>
-    body {{ margin: 0; padding: 0; }}
-    #graph {{ width: 100vw; height: 100vh; }}
-</style>
-</head>
-<body>
-<div id="graph"></div>
-<script>
-    const dot = `{dot_source}`;
-    const viz = new Viz();
-    viz.renderSVGElement(dot)
-    .then(svg => {{
-        document.getElementById("graph").appendChild(svg);
-    }})
-    .catch(err => console.error(err));
-</script>
-</body>
-</html>
-"""
-# 5. Write out to a file
-with open("interactive_dag.html", "w", encoding="utf-8") as f:
-    f.write(html)
-print("Output done - in directory")
+#print("All edges:")
+#print(G.edges())
+
+print("Finshed graph setup - print")
+
+print("Hello from layout")
+# make it left→right, with more separation, and also 90 degree lines
+G.graph_attr.update(rankdir="LR")
+
+G.write("sr8_timeline.dot")
+print(".dot written")
+svg_bytes = G.draw(format="svg", prog="dot")
+with open("interactive_dag.svg", "wb") as f:
+    f.write(svg_bytes)
+
+print("Wrote interactive_dag.svg")
