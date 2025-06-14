@@ -120,7 +120,7 @@ digraph "" {
 	"Assy - Shingled Matrix Panels"	[label="Assy - Shingled Matrix Panels"];
 	"EXT - M10" -> "Assy - Shingled Matrix Panels"	[label=2,
 		weight=2];
-	"EXT- Stilrax"	[label="EXT- Stilrax"];
+	"EXT- Siltrax"	[label="EXT- Siltrax"];
 	"ASSY - HYDROGEN SENSOR ARRAY"	[label="ASSY - HYDROGEN SENSOR ARRAY"];
 	"EXT - External Supplier (TBA)" -> "ASSY - HYDROGEN SENSOR ARRAY"	[label=10,
 		weight=10];

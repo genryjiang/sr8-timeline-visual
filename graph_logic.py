@@ -23,7 +23,7 @@ possible_matches = [
     "EXT - Unknown",
     "EXT - Swagelok",
     "EXT - M10",
-    "EXT - Stilrax",
+    "EXT - Siltrax",
     "EXT - External Supplier (TBA)",
     "EXT - Bosch",
     "EXT - Corning",

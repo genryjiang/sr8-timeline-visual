@@ -4044,11 +4044,11 @@
 <polygon fill="black" stroke="black" points="5748.94,-292.8 5758.81,-288.95 5748.69,-285.8 5748.94,-292.8"/>
 <text text-anchor="middle" x="5466.78" y="-80.65" font-family="Times,serif" font-size="14.00">12</text>
 </g>
-<!-- EXT&#45; Stilrax -->
+<!-- EXT&#45; Siltrax -->
 <g id="node50" class="node">
-<title>EXT&#45; Stilrax</title>
+<title>EXT&#45; Siltrax</title>
 <ellipse fill="none" stroke="black" cx="83.19" cy="-8998.85" rx="65.79" ry="18"/>
-<text text-anchor="middle" x="83.19" y="-8995.15" font-family="Times,serif" font-size="14.00">EXT&#45; Stilrax</text>
+<text text-anchor="middle" x="83.19" y="-8995.15" font-family="Times,serif" font-size="14.00">EXT&#45; Siltrax</text>
 </g>
 <!-- ASSY &#45; HYDROGEN SENSOR ARRAY&#45;&gt;ASSY &#45; HYDROGEN CONTROL LOGIC -->
 <g id="edge665" class="edge">
